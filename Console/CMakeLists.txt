@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28.0)
 
 project(Console)
 
-add_executable(${PROJECT_NAME} main.cpp)
+find_package(glfw3)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Core)
+add_executable(${PROJECT_NAME} "src/main.cpp" )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE Core glfw glad)
