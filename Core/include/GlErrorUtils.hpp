@@ -11,6 +11,7 @@ public:
 	static void check_vao(int expected_vao);
 	static void check_vbo(int expected_vbo);
 	static void check_ebo(int expected_ebo);
+	static void error_callback(int error, const char* description);
 
 private:
 	static bool check_status(GLenum pname, GLint expected);

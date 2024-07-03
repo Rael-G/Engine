@@ -6,6 +6,46 @@
 ProgramShader::ProgramShader(std::vector<Shader> shaders)
     : m_id(NULL), m_shaders(shaders) { }
 
+void ProgramShader::generate()
+{
+    generate_ids();
+
+    for (const Shader& shader : m_shaders) {
+        compile_shader(shader);
+        glAttachShader(m_id, shader.id);
+    }
+
+    glLinkProgram(m_id);
+    GlErrorUtils::check_program_linking(m_id);
+
+    for (const Shader& shader : m_shaders) {
+        glDeleteShader(shader.id);
+    }
+
+}
+
+void ProgramShader::use()
+{
+    glUseProgram(m_id);
+}
+
+void ProgramShader::free() const {
+    glDeleteProgram(m_id);
+}
+
+void ProgramShader::setBool(const std::string& name, bool value) const
+{
+    glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value);
+}
+void ProgramShader::setInt(const std::string& name, int value) const
+{
+    glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
+}
+void ProgramShader::setFloat(const std::string& name, float value) const
+{
+    glUniform1f(glGetUniformLocation(m_id, name.c_str()), value);
+}
+
 void ProgramShader::generate_ids() {
     for (Shader& shader : m_shaders) {
         shader.id = glCreateShader(static_cast<GLenum>(shader.shader_type));
@@ -20,23 +60,3 @@ void ProgramShader::compile_shader(Shader shader) {
     GlErrorUtils::check_shader_compilation(shader.id);
 
 }
-
-void ProgramShader::generate()
-{
-    generate_ids();
-
-    try {
-        for (const Shader& shader : m_shaders) {
-            compile_shader(shader);
-            glAttachShader(m_id, shader.id);
-        }
-    }
-    catch (std::exception e) {
-        std::cerr << e.what() << std::endl;
-    }
-
-    glLinkProgram(m_id);
-    GlErrorUtils::check_program_linking(m_id);
-
-}
-

@@ -6,11 +6,7 @@
 class GraphicalObject
 {
 public :
-    ProgramShader m_program_shader;
-    VertexArrayObject m_vao;
-
-    GraphicalObject(ProgramShader program_shader, VertexArrayObject vao);
-
-    void start();
-    void render() const;
+    virtual void start() = 0;
+    virtual void render() const = 0;
+    virtual void free() const = 0;
 };

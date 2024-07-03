@@ -27,7 +27,6 @@ void GlErrorUtils::check_program_linking(int program_id) {
 void GlErrorUtils::check_error() {
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
-        throw std::exception("OpenGL Error: " + error);
         std::cerr << "OpenGL Error: " << error << std::endl;
     }
 }
@@ -58,4 +57,9 @@ bool GlErrorUtils::check_status(GLenum pname, GLint expected) {
     GLint data;
     glGetIntegerv(pname, &data);
     return data == expected;
+}
+
+void GlErrorUtils::error_callback(int error, const char* description)
+{
+    std::cerr << "Glfw Error: " << error << ". " << description << std::endl;
 }

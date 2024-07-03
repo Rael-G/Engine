@@ -1,0 +1,48 @@
+#include <TestVAO.hpp>
+#include <GlErrorUtils.hpp>
+#include <glad/glad.h>
+#include <iostream>
+#include <vector>
+
+TestVAO::TestVAO(const std::vector<float>& vertices, const std::vector<unsigned int>& indexes)
+    : m_vboId(NULL), m_eboId(NULL), m_vertices(vertices), m_indexes(indexes) {
+    m_id = 0;
+}
+
+void TestVAO::generate() {
+    glGenVertexArrays(1, &m_id);
+    glGenBuffers(1, &m_vboId);
+    glGenBuffers(1, &m_eboId);
+
+    glBindVertexArray(m_id);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
+    glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(float), m_vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_eboId);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indexes.size() * sizeof(unsigned int), m_indexes.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    GlErrorUtils::check_vbo(m_vboId);
+    GlErrorUtils::check_ebo(m_eboId);
+    GlErrorUtils::check_vao(m_id);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+unsigned int TestVAO::size() {
+    return m_indexes.size();
+}
+
+void TestVAO::free() const {
+    glDeleteVertexArrays(1, &m_id);
+    glDeleteBuffers(1, &m_vboId);
+    glDeleteBuffers(1, &m_eboId);
+}
