@@ -1,0 +1,79 @@
+#include <VAOTexture2D.hpp>
+#include <GlErrorUtils.hpp>
+#include <glad/glad.h>
+#include <structs/Texture2D.hpp>
+#include <Texture2DLoader.hpp>
+#include <iostream>
+
+VAOTexture2D::VAOTexture2D(const std::vector<float>& vertices, const std::vector<unsigned int>& indexes, const std::vector<float>& texCoords, const char* texturePath)
+    : m_textureId(NULL), m_vboId(NULL), m_eboId(NULL), m_vertices(vertices), m_indexes(indexes), m_texCoords(texCoords), m_texturePath(texturePath) {
+    m_id = 0;
+}
+
+void VAOTexture2D::generate() {
+
+    generate_texture();
+
+    glGenVertexArrays(1, &m_id);
+    glGenBuffers(1, &m_vboId);
+    glGenBuffers(1, &m_eboId);
+
+    glBindVertexArray(m_id);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
+    glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(float), m_vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_eboId);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indexes.size() * sizeof(unsigned int), m_indexes.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    GlErrorUtils::check_vbo(m_vboId);
+    GlErrorUtils::check_ebo(m_eboId);
+    GlErrorUtils::check_vao(m_id);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+unsigned int VAOTexture2D::size() {
+    return m_indexes.size();
+}
+
+void VAOTexture2D::free() const {
+    glDeleteVertexArrays(1, &m_id);
+    glDeleteBuffers(1, &m_vboId);
+    glDeleteBuffers(1, &m_eboId);
+}
+
+void VAOTexture2D::generate_texture() {
+    glGenTextures(1, &m_textureId);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+    Texture2D texture;
+    try {
+        glBindTexture(GL_TEXTURE_2D, m_textureId);
+        texture = Texture2DLoader::load(m_texturePath);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texture.width, texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, texture.data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    catch (std::exception e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+
+    GlErrorUtils::check_texture(m_textureId);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    Texture2DLoader::free(texture.data);
+}

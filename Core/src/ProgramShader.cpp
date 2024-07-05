@@ -2,6 +2,7 @@
 #include <GlErrorUtils.hpp>
 #include <glad/glad.h>
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 ProgramShader::ProgramShader(std::vector<Shader> shaders)
     : m_id(NULL), m_shaders(shaders) { }
@@ -24,13 +25,18 @@ void ProgramShader::generate()
 
 }
 
-void ProgramShader::use()
+void ProgramShader::use() const
 {
     glUseProgram(m_id);
 }
 
 void ProgramShader::free() const {
     glDeleteProgram(m_id);
+}
+
+void ProgramShader::setTransform(glm::mat4 transform) const {
+    unsigned int transformLoc = glGetUniformLocation(m_id, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 }
 
 void ProgramShader::setBool(const std::string& name, bool value) const
@@ -58,5 +64,4 @@ void ProgramShader::compile_shader(Shader shader) {
     glCompileShader(shader.id);
 
     GlErrorUtils::check_shader_compilation(shader.id);
-
 }

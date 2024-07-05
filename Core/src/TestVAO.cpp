@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <vector>
+#include <glm/glm.hpp>
 
 TestVAO::TestVAO(const std::vector<float>& vertices, const std::vector<unsigned int>& indexes)
     : m_vboId(NULL), m_eboId(NULL), m_vertices(vertices), m_indexes(indexes) {

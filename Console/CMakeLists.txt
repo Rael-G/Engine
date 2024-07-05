@@ -4,6 +4,5 @@ project(Console)
 
 find_package(glfw3)
 
-add_executable(${PROJECT_NAME} "src/main.cpp" )
-
+add_executable(${PROJECT_NAME} "main.cpp")
 target_link_libraries(${PROJECT_NAME} PRIVATE Core glfw glad)

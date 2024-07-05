@@ -20,7 +20,7 @@ void TestObj::render() const
 {
     glUseProgram(m_program_shader.m_id);
     glBindVertexArray(m_vao.m_id);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_vao.size(), GL_UNSIGNED_INT, 0);
     GlErrorUtils::check_error();
 
     glBindVertexArray(0);

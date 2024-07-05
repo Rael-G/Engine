@@ -53,6 +53,11 @@ void GlErrorUtils::check_ebo(int expected_ebo) {
         std::cerr << "The binded element buffer object is diferent from the expected.\n";
 }
 
+void GlErrorUtils::check_texture(int expected_texture) {
+    if (!check_status(GL_TEXTURE_BINDING_2D, expected_texture))
+        std::cerr << "The binded texture buffer object is diferent from the expected.\n";
+}
+
 bool GlErrorUtils::check_status(GLenum pname, GLint expected) {
     GLint data;
     glGetIntegerv(pname, &data);
