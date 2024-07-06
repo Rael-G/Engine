@@ -9,7 +9,6 @@ class ProgramShader
 {
 public:
     unsigned int m_id;
-
 private:
     std::vector<Shader> m_shaders;
 
@@ -21,6 +20,7 @@ public:
     void free() const;
 
     void setTransform(glm::mat4 transform) const;
+    void setMvp(glm::mat4 mvp) const;
     void setBool(const std::string& name, bool value) const;
     void setInt(const std::string& name, int value) const;
     void setFloat(const std::string& name, float value) const;

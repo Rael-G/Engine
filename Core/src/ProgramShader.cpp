@@ -39,6 +39,11 @@ void ProgramShader::setTransform(glm::mat4 transform) const {
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 }
 
+void ProgramShader::setMvp(glm::mat4 mvp) const {
+    unsigned int mvpLoc = glGetUniformLocation(m_id, "mvp");
+    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+}
+
 void ProgramShader::setBool(const std::string& name, bool value) const
 {
     glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value);

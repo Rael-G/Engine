@@ -3,6 +3,7 @@
 #include <ProgramShader.hpp>
 #include <VertexArrayObject.hpp>
 #include <structs/Transform3D.hpp>
+#include <glm/glm.hpp>
 
 class GraphicalObject
 {

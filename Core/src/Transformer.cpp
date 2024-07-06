@@ -5,6 +5,11 @@ const glm::vec3 Transformer::X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::vec3 Transformer::Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
 const glm::vec3 Transformer::Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 
+glm::mat4 Transformer::CalculateMvp(Transform3D transform3D) {
+
+	return Camera::projection() * Camera::view() * Transform(transform3D);
+}
+
 glm::mat4 Transformer::Transform(Transform3D transform3D) {
 	glm::mat4 transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, transform3D.position);
