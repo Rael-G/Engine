@@ -1,7 +1,5 @@
 #include <Window.hpp>
-#include <data_structs/GraphicalObjects.hpp>
 #include <GlErrorUtils.hpp>
-#include <exception>
 #include <iostream>
 
 #define GLAD_GL_IMPLEMENTATION
@@ -12,8 +10,9 @@
 GLFWwindow* Window::m_window = nullptr;
 bool Window::m_isRunning = false;
 WindowData Window::m_config{};
+glm::ivec2 Window::m_viewport{};
 
-void Window::init(int width, int height, const char* title) {
+void Window::init(int width, int height, const std::string& title) {
     set_isRunning(true);
 
     if (!glfwInit())
@@ -27,7 +26,8 @@ void Window::init(int width, int height, const char* title) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    m_window = glfwCreateWindow(width, height, title, NULL, NULL);
+    m_viewport = { width, height };
+    m_window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
     if (!m_window)
     {
         glfwTerminate();
@@ -42,30 +42,30 @@ void Window::init(int width, int height, const char* title) {
     }
 }
 
-void Window::config(WindowData config)
+void Window::config()
 {
     if (m_window == nullptr)
         throw std::runtime_error("Window was not initialized.");
 
-    m_config = config;
-
     glfwSetKeyCallback(m_window, key_callback);
     glfwSetCursorPosCallback(m_window, mouse_callback);
     glfwSetFramebufferSizeCallback(m_window, frame_buffer_size_callback);
-    glfwSwapInterval(config.vsync);
-    if (!config.cursor)
+    glfwSwapInterval(m_config.vsync);
+    if (m_config.disableCursor)
         glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetScrollCallback(m_window, scroll_callback);
 }
 
-void Window::render() {
+void Window::begin_render() {
     if (m_window == nullptr)
         throw std::runtime_error("Window was not initialized.");
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+}
 
-    GraphicalObjects::render();
+void Window::end_render() {
+    GlErrorUtils::check_error();
 
     glfwSwapBuffers(m_window);
     glfwPollEvents();
@@ -88,6 +88,10 @@ void Window::set_isRunning(bool isRunning) {
     m_isRunning = isRunning;
 }
 
+void Window::set_config(WindowData config) {
+    m_config = config;
+}
+
 int Window::key_status(int key) {
     if (m_window == nullptr)
         throw std::runtime_error("Window was not initialized.");
@@ -96,17 +100,29 @@ int Window::key_status(int key) {
 
 void Window::frame_buffer_size_callback(GLFWwindow* window, int width, int height)
 {
+    m_viewport = { width, height };
     glViewport(0, 0, width, height);
 }
 
 void Window::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    m_config.keyCallback(key, scancode, action, mods);
+    if (m_config.keyCallback != nullptr)
+        m_config.keyCallback(key, scancode, action, mods);
 }
 
 void Window::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    m_config.mouseCallback(xpos, ypos);
+    if (m_config.mouseCallback != nullptr)
+        m_config.mouseCallback(xpos, ypos);
 }
 
 void Window::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    m_config.scrollCalback(xoffset, yoffset);
+    if (m_config.scrollCalback != nullptr)
+        m_config.scrollCalback(xoffset, yoffset);
+}
+
+glm::ivec2 Window::getViewport() {
+    return m_viewport;
+}
+void Window::setViewport(glm::ivec2 viewport) {
+    m_viewport = viewport;
+    glViewport(0, 0, viewport.x, viewport.y);
 }

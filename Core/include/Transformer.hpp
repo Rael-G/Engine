@@ -1,7 +1,6 @@
 #pragma once
 
 #include <structs/Transform3D.hpp>
-#include <Camera.hpp>
 #include <glm/glm.hpp>
 
 class Transformer {

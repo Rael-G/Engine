@@ -1,4 +1,4 @@
-#include <VAOTexture2D.hpp>
+#include <vao/VAOTexture2D.hpp>
 #include <GlErrorUtils.hpp>
 #include <glad/glad.h>
 #include <structs/Texture2D.hpp>

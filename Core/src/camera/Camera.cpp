@@ -1,9 +1,9 @@
-#include <Camera.hpp>
+#include <camera/Camera.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <Perspective.hpp>
+#include <camera/Perspective.hpp>
 
 glm::vec3 Camera::m_position{ 0.0f, 0.0f, 3.0f };
-glm::vec3 Camera::m_target{ 0.0f, 0.0f, -1.0f };
+glm::vec3 Camera::m_target{ 0.0f, 0.0f, -0.0f };
 glm::vec3 Camera::m_up{ 0.0f, 1.0f, 0.0f };
 
 static auto p = Perspective(45, 16.0f / 9.0f, 0.5f, 100.0f);
@@ -15,4 +15,5 @@ glm::mat4 Camera::projection() {
 
 glm::mat4 Camera::view() {
 	return glm::lookAt(m_position, m_target, m_up);
+	//return glm::translate(glm::mat4(1.0f), -m_position);
 }

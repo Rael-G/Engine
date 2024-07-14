@@ -1,11 +1,10 @@
 #pragma once
 
-#include <vector>
-
 class VertexArrayObject {
+protected:
+	unsigned int m_id = 0;
+
 public:
-	unsigned int m_id = NULL;
-	virtual void generate() = 0;
+	unsigned int get_id() const;
 	virtual unsigned int size() = 0;
-	virtual void free() const = 0;
 };

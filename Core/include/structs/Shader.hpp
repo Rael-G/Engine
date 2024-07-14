@@ -1,9 +1,9 @@
 #pragma once
 
-#include<enums/ShaderType.hpp>
+#include <enums/ShaderType.hpp>
 
 struct Shader {
-    unsigned int id;
-    const char* source;
-    ShaderType shader_type;
+    unsigned int id = 0;
+    std::string source = "";
+    ShaderType shaderType = ShaderType::Vertex;
 };

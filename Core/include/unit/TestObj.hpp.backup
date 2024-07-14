@@ -1,10 +1,10 @@
 #pragma once
 
-#include <GraphicalObject.hpp>
+#include <RenderUnit.hpp>
 #include <ProgramShader.hpp>
 #include <VertexArrayObject.hpp>
 
-class TestObj : public GraphicalObject
+class TestObj : public RenderUnit
 {
 public:
     ProgramShader m_program_shader;

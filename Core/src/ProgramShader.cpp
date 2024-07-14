@@ -1,11 +1,15 @@
 #include <ProgramShader.hpp>
 #include <GlErrorUtils.hpp>
-#include <glad/glad.h>
-#include <iostream>
-#include <glm/gtc/type_ptr.hpp>
 
 ProgramShader::ProgramShader(std::vector<Shader> shaders)
-    : m_id(NULL), m_shaders(shaders) { }
+    : m_id(0) /*, m_shaders(shaders)*/
+{
+    generate();
+}
+
+unsigned int ProgramShader::get_id() const {
+    return m_id;
+}
 
 void ProgramShader::generate()
 {
@@ -16,13 +20,12 @@ void ProgramShader::generate()
         glAttachShader(m_id, shader.id);
     }
 
-    glLinkProgram(m_id);
-    GlErrorUtils::check_program_linking(m_id);
+    //glLinkProgram(m_id);
+    //GlErrorUtils::check_program_linking(m_id);
 
     for (const Shader& shader : m_shaders) {
         glDeleteShader(shader.id);
     }
-
 }
 
 void ProgramShader::use() const
@@ -30,18 +33,9 @@ void ProgramShader::use() const
     glUseProgram(m_id);
 }
 
-void ProgramShader::free() const {
-    glDeleteProgram(m_id);
-}
-
-void ProgramShader::setTransform(glm::mat4 transform) const {
+void ProgramShader::setTransform(const float* transform) const {
     unsigned int transformLoc = glGetUniformLocation(m_id, "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
-}
-
-void ProgramShader::setMvp(glm::mat4 mvp) const {
-    unsigned int mvpLoc = glGetUniformLocation(m_id, "mvp");
-    glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, transform);
 }
 
 void ProgramShader::setBool(const std::string& name, bool value) const
@@ -57,16 +51,28 @@ void ProgramShader::setFloat(const std::string& name, float value) const
     glUniform1f(glGetUniformLocation(m_id, name.c_str()), value);
 }
 
+void ProgramShader::setVec4f(const std::string& name, const float* value) const {
+    glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, value);
+}
+
 void ProgramShader::generate_ids() {
     for (Shader& shader : m_shaders) {
-        shader.id = glCreateShader(static_cast<GLenum>(shader.shader_type));
+        GLenum st = static_cast<GLenum>(shader.shaderType);
+        unsigned int id = shader.id;
+        id = glCreateShader(st);
+        shader.id = id;
     }
-    m_id = glCreateProgram();
+    //m_id = glCreateProgram();
 }
 
 void ProgramShader::compile_shader(Shader shader) {
-    glShaderSource(shader.id, 1, &shader.source, NULL);
+    auto src = shader.source.c_str();
+    glShaderSource(shader.id, 1, &src, NULL);
     glCompileShader(shader.id);
 
     GlErrorUtils::check_shader_compilation(shader.id);
+}
+
+ProgramShader::~ProgramShader() {
+    glDeleteProgram(m_id);
 }

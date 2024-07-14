@@ -1,16 +1,16 @@
 #pragma once
 
-#include <GraphicalObject.hpp>
+#include <RenderUnit.hpp>
 #include <ProgramShader.hpp>
-#include <VAOCube2D.hpp>
+#include <vao/VAOCube2D.hpp>
 
-class Cube2DObj : public GraphicalObject
+class Cube2DObj : public RenderUnit
 {
 public:
     ProgramShader m_program_shader;
     VAOCube2D& m_vao;
 
-    Cube2DObj(ProgramShader program_shader, VAOCube2D& vao, Transform3D& transform);
+    Cube2DObj(ProgramShader program_shader, VAOCube2D& vao, const float* transform);
 
     void start() override;
     void render() const override;

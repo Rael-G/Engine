@@ -1,5 +1,4 @@
 #include <GlErrorUtils.hpp>
-#include <glad/glad.h>
 #include <iostream>
 
 void GlErrorUtils::check_shader_compilation(int shader_id) {
